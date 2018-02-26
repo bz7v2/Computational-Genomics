@@ -1,6 +1,6 @@
 clear all; clc;
 %% location of the data: filename and group
-fileName = 'e1.h5';
+fileName = 'g2f_2014_zeagbsv27.raw.h5';
 location = '/Genotypes';
 %% extract data by linename
 info = h5info(fileName, location);
