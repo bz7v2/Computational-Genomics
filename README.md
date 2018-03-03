@@ -9,3 +9,10 @@ Group 2 HWs
 ![pic](hw_MATLAB/intersectionsBar100.png)
 ![pic](hw_MATLAB/intersectionsBar1000.png)
 ![pic](hw_MATLAB/intersectionsBar10000.png)
+
+##chunking with python(Max)
+-import table via chunking and cycle through line
+-loop every line and every location to find distribution of intersection alleles
+-find quantity of intersections per line
+-plot number of intersections per line
+-plot distribution of intersections per line
