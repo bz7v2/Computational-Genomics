@@ -15,4 +15,6 @@ Group 2 HWs
 -loop every line and every location to find distribution of intersection alleles
 -find quantity of intersections per line
 -plot number of intersections per line
+![oic](RowNum1575.png)
 -plot distribution of intersections per line
+![pic](RowTypes1575.png)
