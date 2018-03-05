@@ -3,6 +3,7 @@ clear all; clc;
 fileName = 'g2f_2014_zeagbsv27.raw.h5';
 location = '/Genotypes';
 %% extract data by linename
+chromos = h5read(fileName, strcat('/Positions', '/ChromosomeIndices')); % chromosome number
 info = h5info(fileName, location);
 lines = numel(info.Groups) - 1;
 cells = struct2cell(info.Groups);
@@ -42,33 +43,33 @@ end
 %% the set of genomic positions having two or more SNPs (“intersecting SNPs”)
 sites = find(intersections ~= 0);
 %% the names of the lines and their non-N variants at each position 
-nonNlocus = zeros(lines, cols);
-count = 1;
-for i = 1:lines
-    count = 1;
-    for j = 1:cols
-        if (data(i, j) ~= -1) 
-            nonNlocus(i, count) = j;
-            count = count + 1;
-        end
-    end
-end
-% print the nonNlocus
-fileID = fopen('intersections.txt','w');
-for i = 1:lines
-    fprintf(fileID,'%s:\r',erase(names{i}, strcat(location, '/')));
-    for j = 1:cols
-        if (nonNlocus(i, j) ~= 0) 
-            fprintf(fileID,'%d ',nonNlocus(i, j));
-            %fprintf(fileID,'(%s)\r',map(data(i, nonNlocus(i, j))));
-            %fprintf(fileID,'\r');
-        else
-            break;
-        end
-    end
-    fprintf(fileID,'\n');
-end
-fclose(fileID);
+% nonNlocus = zeros(lines, cols);
+% count = 1;
+% for i = 1:lines
+%     count = 1;
+%     for j = 1:cols
+%         if (data(i, j) ~= -1) 
+%             nonNlocus(i, count) = j;
+%             count = count + 1;
+%         end
+%     end
+% end
+% % print the nonNlocus
+% fileID = fopen('intersections.txt','w');
+% for i = 1:lines
+%     fprintf(fileID,'%s: ',erase(names{i}, strcat(location, '/')));
+%     for j = 1:cols
+%         if (nonNlocus(i, j) ~= 0) 
+%             fprintf(fileID,'%d',nonNlocus(i, j));
+%             fprintf(fileID,'(%s) ',map(data(i, nonNlocus(i, j))));
+%             %fprintf(fileID,'\r');
+%         else
+%             break;
+%         end
+%     end
+%     fprintf(fileID,'\n');
+% end
+% fclose(fileID);
 %% print intersections, file size > 1G
 % fileID = fopen('intersections.txt','w');
 % for i = 1:cols
@@ -82,9 +83,24 @@ fclose(fileID);
 % end
 % fclose(fileID);
 %% the number of lines at each intersecting SNP and their distribution of intersecting SNP positions across the genome 
-bar(intersections(1:10000)');
+figure(1)
+bar(intersections');
 title('Number of intersections at each location');
 ylabel('Number of intersections');
 xlabel('Coordinate');
+set(gcf,'color','white');
+set(gca,'FontSize',14);
+% plot by chromosome number
+Nchromos = 11;
+intersectionByChromes = zeros(1,Nchromos);
+for i=1:cols
+    intersectionByChromes(chromos(i)+1) = intersectionByChromes(chromos(i)+1) + intersections(i);
+end
+figure(2)
+x = 0:(Nchromos - 1);
+bar(x, intersectionByChromes');
+title('Total number of intersections at each Chromesome');
+ylabel('Number of intersections');
+xlabel('Chromosome');
 set(gcf,'color','white');
 set(gca,'FontSize',14);
