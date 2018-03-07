@@ -43,45 +43,33 @@ end
 %% the set of genomic positions having two or more SNPs (“intersecting SNPs”)
 sites = find(intersections ~= 0);
 %% the names of the lines and their non-N variants at each position 
-% nonNlocus = zeros(lines, cols);
-% count = 1;
-% for i = 1:lines
-%     count = 1;
-%     for j = 1:cols
-%         if (data(i, j) ~= -1) 
-%             nonNlocus(i, count) = j;
-%             count = count + 1;
-%         end
-%     end
-% end
-% % print the nonNlocus
-% fileID = fopen('intersections.txt','w');
-% for i = 1:lines
-%     fprintf(fileID,'%s: ',erase(names{i}, strcat(location, '/')));
-%     for j = 1:cols
-%         if (nonNlocus(i, j) ~= 0) 
-%             fprintf(fileID,'%d',nonNlocus(i, j));
-%             fprintf(fileID,'(%s) ',map(data(i, nonNlocus(i, j))));
-%             %fprintf(fileID,'\r');
-%         else
-%             break;
-%         end
-%     end
-%     fprintf(fileID,'\n');
-% end
-% fclose(fileID);
-%% print intersections, file size > 1G
-% fileID = fopen('intersections.txt','w');
-% for i = 1:cols
-%     fprintf(fileID,'%d\r',i);
-%     for j = 1:lines
-%         if (data(j, i) ~= -1) 
-%             fprintf(fileID,'%s\r',erase(names{j}, strcat(location, '/')));
-%         end
-%     end
-%     fprintf(fileID,'\n');
-% end
-% fclose(fileID);
+nonNlocus = zeros(lines, cols);
+count = 1;
+for i = 1:lines
+    count = 1;
+    for j = 1:cols
+        if (data(i, j) ~= -1) 
+            nonNlocus(i, count) = j;
+            count = count + 1;
+        end
+    end
+end
+% print the nonNlocus
+fileID = fopen('intersections.txt','w');
+for i = 1:lines
+    fprintf(fileID,'%s: ',erase(names{i}, strcat(location, '/')));
+    for j = 1:cols
+        if (nonNlocus(i, j) ~= 0) 
+            fprintf(fileID,'%d',nonNlocus(i, j));
+            fprintf(fileID,'(%s) ',map(data(i, nonNlocus(i, j))));
+            %fprintf(fileID,'\r');
+        else
+            break;
+        end
+    end
+    fprintf(fileID,'\n');
+end
+fclose(fileID);
 %% the number of lines at each intersecting SNP and their distribution of intersecting SNP positions across the genome 
 figure(1)
 bar(intersections');
@@ -92,15 +80,32 @@ set(gcf,'color','white');
 set(gca,'FontSize',14);
 % plot by chromosome number
 Nchromos = 11;
-intersectionByChromes = zeros(1,Nchromos);
+intersectionByChromos = zeros(1,Nchromos);
 for i=1:cols
-    intersectionByChromes(chromos(i)+1) = intersectionByChromes(chromos(i)+1) + intersections(i);
+    intersectionByChromos(chromos(i)+1) = intersectionByChromos(chromos(i)+1) + intersections(i);
 end
 figure(2)
 x = 0:(Nchromos - 1);
-bar(x, intersectionByChromes');
+bar(x, intersectionByChromos');
 title('Total number of intersections at each Chromesome');
 ylabel('Number of intersections');
 xlabel('Chromosome');
 set(gcf,'color','white');
 set(gca,'FontSize',14);
+%% plots for each chromo
+lociCounts = zeros(1,Nchromos);
+for i=1:cols
+    lociCounts(chromos(i)+1) = lociCounts(chromos(i)+1) + 1;
+end
+offset = 0;
+for i=1:Nchromos
+    figure(i + 2);
+    x = 1:lociCounts(i);
+    scatter(x, intersections(offset + x), 2, 'filled');
+    offset = offset + lociCounts(i);
+    title(['NO.intersections at each location(chromo ' num2str(i - 1) ')']);
+    ylabel('Number of intersections');
+    xlabel('Coordinate');
+    set(gcf,'color','white');
+    set(gca,'FontSize',14);
+end
